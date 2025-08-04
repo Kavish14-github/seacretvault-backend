@@ -12,5 +12,5 @@ router.register(r'environments', EnvironmentViewSet, basename='environment')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path("api/auth/token/", views.obtain_auth_token),
+    path("auth/token/", views.obtain_auth_token),
 ]

@@ -4,9 +4,11 @@ from cryptography.fernet import Fernet
 import os
 from django.conf import settings
 
-# Generate and store a single encryption key per instance (you might store this more securely in production)
-FERNET_KEY = os.environ.get('FERNET_KEY', Fernet.generate_key())
-f = Fernet(FERNET_KEY)
+from django.conf import settings
+from cryptography.fernet import Fernet
+
+fernet = Fernet(settings.SECRET_KEY.encode())
+
 
 class Project(models.Model):
     name = models.CharField(max_length=100)
@@ -33,14 +35,12 @@ class Secret(models.Model):
     version = models.IntegerField(default=1)
 
     def save(self, *args, **kwargs):
-        if self.value and not self.value.startswith("gAAAA"):  # naive check to avoid re-encrypting
-            fernet = Fernet(settings.FERNET_KEY.encode())
+        if self.value and not self.value.startswith("gAAAA"):
             self.value = fernet.encrypt(self.value.encode()).decode()
         super().save(*args, **kwargs)
 
     def get_decrypted_value(self):
         try:
-            fernet = Fernet(settings.FERNET_KEY.encode())
             return fernet.decrypt(self.value.encode()).decode()
         except Exception:
-            return None 
+            return None

@@ -20,12 +20,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 import os
 from dotenv import load_dotenv
 
-load_dotenv()  # ensures .env is loaded
 
-SECRET_KEY = os.getenv("SECRET_ENCRYPTION_KEY")
+# Django's core secret key (used for sessions, CSRF, etc)
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")  # Used by Django and Fernet
 
 if not SECRET_KEY:
-    raise ValueError("Missing SECRET_ENCRYPTION_KEY in .env file")
+    raise ValueError("Missing SECRET_KEY in .env file")
+
+FERNET_KEY = SECRET_KEY
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
